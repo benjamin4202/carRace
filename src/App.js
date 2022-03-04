@@ -2,6 +2,7 @@ import Settings from './data/canvas-settings';
 import './App.css';
 import drawMountain from './drawings/drawMountain';
 import { useEffect } from 'react';
+import Vector2 from './utils/Vector2';
 
 function App() {
 
@@ -17,22 +18,6 @@ function App() {
 
   const randomRange = (min, max) => {
     return min + Math.random() * (max - min);
-  }
-  
-  const norm = (value, min, max) => {
-    return (value - min) / (max - min);
-  }
-  
-  const lerp = (norm, min, max) => {
-    return (max - min) * norm + min;
-  }
-  
-  const map = (value, sourceMin, sourceMax, destMin, destMax) => {
-    return lerp(norm(value, sourceMin, sourceMax), destMin, destMax);
-  }
-  
-  const clamp = (value, min, max) => {
-    return Math.min(Math.max(value, min), max);
   }
 
   const calcMovement = () => {
@@ -68,8 +53,8 @@ function App() {
       }
     }
     
-    Settings.state.turn = clamp(Settings.state.turn, -5, 5);
-    Settings.state.speed = clamp(Settings.state.speed, 0, Settings.state.car.maxSpeed);
+    Settings.state.turn = Vector2.clamp(Settings.state.turn, -5, 5);
+    Settings.state.speed = Vector2.clamp(Settings.state.speed, 0, Settings.state.car.maxSpeed);
     
     // section
     Settings.state.section -= Settings.state.speed;
@@ -96,7 +81,7 @@ function App() {
       Settings.state.speed *= 0.96;
     }
     
-    Settings.state.xpos = clamp(Settings.state.xpos, -650, 650);
+    Settings.state.xpos = Vector2.clamp(Settings.state.xpos, -650, 650);
   }
 
   const keyUp = (e) => {
@@ -136,7 +121,7 @@ const move = (e, isKeyDown) => {
   
     ctx.fillStyle =  darkColor;
     while(pos <= ctx.canvas.height) {
-      stepSize = norm(pos, Settings.settings.skySize, ctx.canvas.height) * Settings.settings.ground.max;
+      stepSize = Vector2.norm(pos, Settings.settings.skySize, ctx.canvas.height) * Settings.settings.ground.max;
       if(stepSize < Settings.settings.ground.min) {
         stepSize = Settings.settings.ground.min;
       }
@@ -294,7 +279,7 @@ const move = (e, isKeyDown) => {
     }
     
     // draw pointer
-    angle = map(Settings.state.speed, 0, Settings.state.car.maxSpeed, 90, 360);
+    angle = Vector2.map(Settings.state.speed, 0, Settings.state.car.maxSpeed, 90, 360);
     drawPointer(ctx, color, 50, centerX, centerY, angle);
   }
 
